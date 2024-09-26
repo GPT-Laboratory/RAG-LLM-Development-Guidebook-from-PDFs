@@ -11,12 +11,16 @@ This repository provides a practical guide to building Retrieval-Augmented Gener
 ## Installation
 
 1. Clone this repository.
-2. Install the required Python packages:
+    ```bash
+    git clone https://github.com/GPT-Laboratory/RAG-LLM-Development-Guidebook-from-PDFs
+    cd RAGUsingOpenAIGPT4.0
+    ```
+3. Install the required Python packages:
     ```bash
     pip install -r requirements.txt
     ```
 
-3. Add your OpenAI API key to the `.env` file in the same directory as `main.py`:
+4. Add your OpenAI API key to the `.env` file in the same directory as `main.py`:
     ```
     OPENAI_API_KEY=your_openai_api_key_here
     ```
