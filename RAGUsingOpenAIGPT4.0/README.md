@@ -4,7 +4,7 @@ This repository provides a practical guide to building Retrieval-Augmented Gener
 
 ## Prerequisites
 
-- Python 3.8 or higher
+- Python 3.11 or higher
 - An OpenAI API Key
 - PDF documents to serve as the knowledge base
 
