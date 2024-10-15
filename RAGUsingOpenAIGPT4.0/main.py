@@ -134,8 +134,8 @@ while True:
     if user_input.lower() == 'exit':
         print("Exiting the conversation. Goodbye!")
         break
-    
-    # Add a message to the thread with user input
+
+    # Add a message to the thread with the new user input
     message_conversation = {
         "role": "user",
         "content": [
@@ -146,9 +146,10 @@ while True:
         ]
     }
 
+    # Create the message in the thread
     message_response = client.beta.threads.messages.create(thread_id=message_thread.id, **message_conversation)
 
-    # Initiate a run
+    # Initiate a run for the current question
     run = client.beta.threads.runs.create(
         thread_id=message_thread.id,
         assistant_id=assistant.id
@@ -157,32 +158,51 @@ while True:
     # Start fetching messages in real-time
     response_text = ""
     citations = []
-    processed_message_ids = set()
+    processed_message_ids = set()  # Reset processed message IDs for each new question
 
+    # Wait for the assistant's run to complete before fetching the response
+    while True:
+        run_status = client.beta.threads.runs.retrieve(run.id, thread_id=message_thread.id)
+        if run_status.status == 'completed':
+            break
+        elif run_status.status == 'failed':
+            raise Exception(f"Run failed: {run_status.error}")
+        time.sleep(1)  # Poll every second
+
+    # Fetch the latest messages after the run completes
     while True:
         response_messages = client.beta.threads.messages.list(thread_id=message_thread.id)
+
+        # Filter out processed messages and get only the new ones
         new_messages = [msg for msg in response_messages.data if msg.id not in processed_message_ids]
         
         for message in new_messages:
             if message.role == "assistant" and message.content:
                 message_content = message.content[0].text
                 annotations = message_content.annotations
+
                 for index, annotation in enumerate(annotations):
-                    message_content.value = message_content.value.replace(
-                            annotation.text, f"[{index}]"
-                        )
+                    message_content.value = message_content.value.replace(annotation.text, f"[{index}]")
                     if file_citation := getattr(annotation, "file_citation", None):
                         cited_file = client.files.retrieve(file_citation.file_id)
                         citations.append(f"[{index}] {cited_file.filename}")
+                
+                # Print the assistant's response word by word
                 words = message_content.value.split()
                 for word in words:
                     print(word, end=' ', flush=True)
-                    time.sleep(0.05)  
+                    time.sleep(0.05)
+                
+                # Mark this message as processed
                 processed_message_ids.add(message.id)
-        
+
+        # Break the loop once the assistant responds
         if any(msg.role == "assistant" and msg.content for msg in new_messages):
             break
-        
+
         time.sleep(1)
 
+    # Print citations if available
+    if citations:
+        print("\nSources:", ", ".join(citations))
     print("\n")
