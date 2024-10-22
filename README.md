@@ -1,6 +1,6 @@
 # RAG LLM Development Guidebook from PDFs
 
-This repository accompanies the guidebook, *"Developing Retrieval Augmented Generation (RAG) Systems from PDFs: A Practical Guide"*, which is available on [arXiv](https://arxiv.org/abs/2410.15944).
+This repository accompanies the guidebook, *"Developing Retrieval Augmented Generation (RAG) Systems from PDFs: An Experience Report"*, which is available on [arXiv](https://arxiv.org/abs/2410.15944).
 
 The repository contains the source code for implementing Retrieval-Augmented Generation (RAG) systems using two distinct approaches:
 
